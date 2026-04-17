@@ -36,3 +36,10 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8080
         run: npm run build
+  build-docker:
+    needs: test-and-build # Nunggu test ijo dulu baru jalanin ini
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker Image
+        run: docker build -t bookstore-frontend:test .
