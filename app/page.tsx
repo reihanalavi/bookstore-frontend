@@ -9,7 +9,7 @@ export default async function Home() {
     <main className="min-h-screen bg-gray-100 p-10 text-black">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-extrabold text-blue-900">📚 Rehan's Library</h1>
+          <h1 className="text-4xl font-extrabold text-blue-900">📚 Rehan&apos;s Library</h1>
           <Link 
             href="/add-book" 
             className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition shadow-md"

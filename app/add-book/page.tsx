@@ -32,8 +32,12 @@ export default function AddBookPage() {
       alert("Mantap! Buku berhasil disimpan.");
       router.push('/'); // Balik ke home
       router.refresh(); // Biar data terbaru muncul
-    } catch (err: any) {
-      alert("Waduh error: " + err.message);
+    } catch (err: unknown) {
+    if (err instanceof Error) {
+        alert("Waduh error: " + err.message);
+    } else {
+        alert("Terjadi kesalahan yang aneh");
+    }
     } finally {
       setLoading(false);
     }

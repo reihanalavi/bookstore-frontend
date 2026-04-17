@@ -19,7 +19,7 @@ export default function AddAuthorPage() {
       await createAuthor(name);
       alert("Author berhasil ditambahkan!");
       router.push('/add-book'); // Biasanya abis nambah author mau langsung nambah buku kan?
-    } catch (err) {
+    } catch (_) {
       alert("Gagal nambah author");
     } finally {
       setLoading(false);
