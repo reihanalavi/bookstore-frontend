@@ -1,4 +1,4 @@
-name: Frontend CI
+name: Frontend CI/CD to Docker Hub
 
 on:
   push:
@@ -7,39 +7,42 @@ on:
     branches: [ main ]
 
 jobs:
-  test-and-build:
+  test-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 1. Setup Node & Run Test (Pagar pertama)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
       - name: Install Dependencies
         run: npm install
-
-      - name: Run ESLint
-        # Mencegah push kalau ada kode yang berantakan
+      - name: Run Lint
         run: npm run lint
-
-      - name: Run Unit Tests (Jest)
-        # Menjalankan test-test yang kita buat tadi (BookCard, AddAuthor, dll)
+      - name: Run Tests
         run: npm test
 
-      - name: Build Project
-        # Kita masukkan env palsu/dummy biar Next.js nggak komplain pas build
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:8080
-        run: npm run build
-  build-docker:
-    needs: test-and-build # Nunggu test ijo dulu baru jalanin ini
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build Docker Image
-        run: docker build -t bookstore-frontend:test .
+      # 2. Login ke Docker Hub (Hanya jalan kalau push ke main)
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Build dan Push (Hanya jalan kalau push ke main)
+      - name: Build and Push Docker Image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Ganti dengan username Docker Hub kamu
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bookstore-frontend:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost:8080
